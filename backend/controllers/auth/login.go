@@ -48,5 +48,5 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	session.Save(r, w)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
+	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful", "username": user.Username})
 }

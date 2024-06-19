@@ -18,13 +18,16 @@ func main() {
 	}
 	models.InitDBConn()
 
-	http.HandleFunc("/register", middleware.Chain(controller.RegisterUser, middleware.Post()))
-	http.HandleFunc("/login", middleware.Chain(controller.LoginUser, middleware.Post()))
-	http.HandleFunc("/verify", middleware.Chain(controller.VerifyUser, middleware.Get()))
-	http.HandleFunc("/logout", middleware.Chain(controller.LogoutUser, middleware.Get(), middleware.CheckLogin()))
-	http.HandleFunc("/request-reset-password", middleware.Chain(controller.RequestResetPassword, middleware.Post()))
-	http.HandleFunc("/reset-password", middleware.Chain(controller.ResetPassword, middleware.Post()))
-	http.HandleFunc("/chat", middleware.Chain(wschat.HandleWSConnection, middleware.Get(), middleware.CheckLogin()))
+	handler := http.NewServeMux()
 
-	log.Fatal(http.ListenAndServe("localhost:8080", nil))
+	handler.HandleFunc("/register", middleware.Chain(controller.RegisterUser, middleware.Post()))
+	handler.HandleFunc("/login", middleware.Chain(controller.LoginUser, middleware.Post()))
+	handler.HandleFunc("/verify", middleware.Chain(controller.VerifyUser, middleware.Get()))
+	handler.HandleFunc("/logout", middleware.Chain(controller.LogoutUser, middleware.Get(), middleware.CheckLogin()))
+	handler.HandleFunc("/request-reset-password", middleware.Chain(controller.RequestResetPassword, middleware.Post()))
+	handler.HandleFunc("/reset-password", middleware.Chain(controller.ResetPassword, middleware.Post()))
+	handler.HandleFunc("/chat", middleware.Chain(wschat.HandleWSConnection, middleware.Get(), middleware.CheckLogin()))
+
+	mwhandler := middleware.Chain(handler.ServeHTTP, middleware.CORS())
+	log.Fatal(http.ListenAndServe("localhost:8080", mwhandler))
 }
