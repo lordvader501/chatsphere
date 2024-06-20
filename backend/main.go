@@ -27,6 +27,11 @@ func main() {
 	handler.HandleFunc("/request-reset-password", middleware.Chain(controller.RequestResetPassword, middleware.Post()))
 	handler.HandleFunc("/reset-password", middleware.Chain(controller.ResetPassword, middleware.Post()))
 	handler.HandleFunc("/chat", middleware.Chain(wschat.HandleWSConnection, middleware.Get(), middleware.CheckLogin()))
+	handler.HandleFunc("/create-room", middleware.Chain(wschat.CreateRoom, middleware.Post(), middleware.CheckLogin()))
+	handler.HandleFunc("/check-roomid", middleware.Chain(wschat.CheckRoomID, middleware.Post(), middleware.CheckLogin()))
+	handler.HandleFunc("/list-rooms", middleware.Chain(wschat.ListRooms, middleware.Get(), middleware.CheckLogin()))
+	handler.HandleFunc("/delete-room", middleware.Chain(wschat.DeleteRoom, middleware.Post(), middleware.CheckLogin()))
+	handler.HandleFunc("/update-room", middleware.Chain(wschat.UpdateRoom, middleware.Post(), middleware.CheckLogin()))
 
 	mwhandler := middleware.Chain(handler.ServeHTTP, middleware.CORS())
 	log.Fatal(http.ListenAndServe("localhost:8080", mwhandler))

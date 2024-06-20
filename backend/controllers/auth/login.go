@@ -31,6 +31,11 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
+	if !user.Verified {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Please verify your account!"})
+		return
+	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(cred.Password)); err != nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -42,7 +47,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = user.ID
 	session.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   3600, // Session expiration time in seconds (e.g., 1 hour)
+		MaxAge:   86400,
 		HttpOnly: true,
 	}
 	session.Save(r, w)

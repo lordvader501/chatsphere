@@ -55,7 +55,48 @@ func InitDBConn() {
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
 	`
-
+	// create a query of rooms im which pimary key is room name is room provate or not created by created at updated at and room id is of type xxx-xxxx-xxx
+	createRoomTableQuery := `
+		CREATE TABLE IF NOT EXISTS rooms (
+			room_id CHAR(12) PRIMARY KEY,
+			room_name VARCHAR(255) NOT NULL,
+			is_private BOOLEAN NOT NULL DEFAULT FALSE,
+			created_by VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+);
+	`
+	createRoomUserTableQuery := `
+		CREATE TABLE IF NOT EXISTS room_users (
+    user_id VARCHAR(255) NOT NULL,
+    room_id CHAR(12) NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, room_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE
+);
+	`
+	createMessageTableQuery := `
+		CREATE TABLE IF NOT EXISTS messages (
+			message_id VARCHAR(255) PRIMARY KEY,
+			room_id CHAR(12) NOT NULL,
+			user_id VARCHAR(255) NOT NULL,
+			content TEXT NOT NULL,
+			sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (room_id) REFERENCES rooms(room_id) ON DELETE CASCADE,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+		);
+	`
+	if _, err := db.Exec(createRoomTableQuery); err != nil {
+		fmt.Println("error in creation of table room.", err)
+	}
+	if _, err := db.Exec(createRoomUserTableQuery); err != nil {
+		fmt.Println("error in creation of table room user.", err)
+	}
+	if _, err := db.Exec(createMessageTableQuery); err != nil {
+		fmt.Println("error in creation of table message.", err)
+	}
 	if _, err := db.Exec(userTableQuery); err != nil {
 		fmt.Println("error in creation of table user.", err)
 	}
