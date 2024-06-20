@@ -11,6 +11,9 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./userSlice";
+import roomsSlice from "./roomsSlice";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const persistConfig = {
   key: "root",
@@ -19,6 +22,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   user: userReducer,
+  myrooms: roomsSlice,
 });
 const persistedReducer = persistReducer(persistConfig, reducers);
 
@@ -33,5 +37,8 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
+
+export const useAppSelector: TypedUseSelectorHook<ReturnType<typeof store.getState>> = useSelector;
+export const useAppDispatch = () => useDispatch<typeof store.dispatch>();
 
 export { store, persistor };

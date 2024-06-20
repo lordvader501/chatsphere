@@ -7,16 +7,19 @@ import Link from "next/link";
 import useForm from "@/lib/hooks/useForm";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 import { setUser } from "@/lib/store/userSlice";
-import { useSelector } from "react-redux";
+import { Loader2 } from "lucide-react";
+import { useToast } from "../ui/use-toast";
+import { loginUserApi, signupUserApi } from "@/lib/apiscaller";
+import { useAppDispatch, useAppSelector } from "@/lib/store";
 
-function LoginLogoutForm({ isLogin }: { isLogin: boolean }) {
+function LoginSignupForm({ isLogin }: { isLogin: boolean }) {
   const { email, username, password, confirmPassword, setForm } = useForm();
   const [loading, setLoading] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const user = useSelector((state) => (state as any).user.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user.user);
   const router = useRouter();
+  const { toast } = useToast();
 
   if (user) {
     router.push("/");
@@ -30,24 +33,31 @@ function LoginLogoutForm({ isLogin }: { isLogin: boolean }) {
     if (isLogin) user = email;
     try {
       setLoading(true);
-      const response = await fetch(process.env["BACKEND_URL"] + "/login", {
-        method: "POST",
-        body: JSON.stringify({
-          email: email,
-          username: user,
-          password: password,
-        }),
-        credentials: "include",
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw Error(data.error);
+      let data;
+      if (isLogin) {
+        data = await loginUserApi(user, password);
+        dispatch(setUser(data.username));
+      } else {
+        data = await signupUserApi(email, username, password);
       }
-      dispatch(setUser(data.username));
-
-      router.push("/");
+      toast({
+        description: data.message,
+        variant: "success",
+      });
+      if (!isLogin) {
+        toast({
+          description: "Verification mail has been sent. Please verify!",
+          variant: "warning",
+        });
+      }
+      router.push(isLogin ? "/" : "/login");
     } catch (e) {
       console.error(e);
+      toast({
+        title: "Uh Oh! Something wrong happened!",
+        description: e + "",
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -109,7 +119,7 @@ function LoginLogoutForm({ isLogin }: { isLogin: boolean }) {
           )}
         </div>
         <Button type="submit" className="w-full" onClick={handleSigninSignup}>
-          {isLogin ? "Login" : "Sign up"}
+          {buttonText(loading, isLogin)}
         </Button>
       </div>
       <div className="mt-4 text-center text-sm">
@@ -122,4 +132,19 @@ function LoginLogoutForm({ isLogin }: { isLogin: boolean }) {
   );
 }
 
-export default LoginLogoutForm;
+export default LoginSignupForm;
+
+function buttonText(
+  loading: boolean,
+  isLogin: boolean
+): string | React.ReactNode {
+  if (loading)
+    return (
+      <div className="flex items-center justify-center">
+        <Loader2 className="mr-2 h-[18px] w-[18px] animate-spin" />
+        Please wait
+      </div>
+    );
+  if (isLogin) return "Log In";
+  return "Sign Up";
+}

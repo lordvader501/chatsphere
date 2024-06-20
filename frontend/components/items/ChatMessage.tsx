@@ -1,6 +1,7 @@
-import { Message } from "@/lib/const";
+import { Message } from "@/lib/interfaces";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { ScrollArea } from "../ui/scroll-area";
 
 function ChatMessage({ messages }: { messages: Message[] }) {
   return (
@@ -39,7 +40,7 @@ function ChatBox({
 }) {
   return (
     <div
-      className={cn("min-w-80 max-w-96 flex flex-col mb-2.5", {
+      className={cn("max-w-72 xs:max-w-96 flex flex-col mb-2.5", {
         "items-end": type === 1,
         "items-start": type === 2,
         "items-center": type === 4 || type === 5,
@@ -47,12 +48,15 @@ function ChatBox({
     >
       {username && <div className="text-xs px-1">@{username}</div>}
       <div
-        className={cn("px-4 rounded-sm py-1.5", {
-          "bg-blue-300 text-right pr-2.5": type === 1,
-          "bg-green-300 pl-2.5": type === 2,
-          "bg-slate-300 px-4 py-0.5 rounded-full text-center text-xs w-fit font-light":
-            type === 4 || type === 5,
-        })}
+        className={cn(
+          "px-4 w-[calc(100%+20px)] break-words rounded-sm py-1.5",
+          {
+            "bg-blue-300 pr-2.5": type === 1,
+            "bg-green-300 pl-2.5": type === 2,
+            "bg-slate-300 px-4 py-0.5 rounded-full text-center text-xs w-fit font-light":
+              type === 4 || type === 5,
+          }
+        )}
       >
         {message}
       </div>

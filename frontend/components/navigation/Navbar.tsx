@@ -7,6 +7,11 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import NavbarUserorSigninItem from "../items/NavbarUserorSigninItem";
 
 function NavbarComponent() {
+  const navMenuItems = [
+    { name: "Chat Room", href: "/chat" },
+    { name: "About Us", href: "/about-us" },
+    { name: "Contact Us", href: "/contact-us" },
+  ];
   return (
     <div className="flex justify-center items-center w-full flex-col border-b sticky top-0 h-16">
       <header className="sticky top-0 w-full max-w-[1280px] flex h-16 items-center gap-4 bg-background px-4 md:px-6">
@@ -20,32 +25,21 @@ function NavbarComponent() {
           </Link>
           <Link
             href="/"
-            className="text-muted-foreground whitespace-nowrap transition-colors hover:text-foreground"
             aria-label="Home"
+            className="text-muted-foreground whitespace-nowrap transition-colors hover:text-foreground"
           >
             Home
           </Link>
-          <Link
-            href="/chat"
-            className="text-muted-foreground whitespace-nowrap transition-colors hover:text-foreground"
-            aria-label="Chat Room"
-          >
-            Chat Room
-          </Link>
-          <Link
-            href="about-us"
-            className="text-muted-foreground whitespace-nowrap transition-colors hover:text-foreground"
-            aria-label="About Us"
-          >
-            About Us
-          </Link>
-          <Link
-            href="contact-us"
-            className="text-muted-foreground whitespace-nowrap transition-colors hover:text-foreground"
-            aria-label="Contact Us"
-          >
-            Contact Us
-          </Link>
+          {navMenuItems.map((item, index) => (
+            <Link
+              key={index}
+              href={item.href}
+              aria-label={item.name}
+              className="text-muted-foreground whitespace-nowrap transition-colors hover:text-foreground"
+            >
+              {item.name}
+            </Link>
+          ))}
         </nav>
         <Sheet>
           <SheetTrigger asChild>
@@ -68,34 +62,15 @@ function NavbarComponent() {
                 <Keyboard className="h-6 w-6" />
                 <span className="sr-only">ChatSphere Inc</span>
               </Link>
-              <Link
-                href="/"
-                className="text-muted-foreground whitespace-nowrap hover:text-foreground"
-                aria-label="Home"
-              >
-                Home
-              </Link>
-              <Link
-                href="/chat"
-                className="text-muted-foreground whitespace-nowrap hover:text-foreground"
-                aria-label="Chat Room"
-              >
-                Chat Room
-              </Link>
-              <Link
-                href="about-us"
-                className="text-muted-foreground whitespace-nowrap hover:text-foreground"
-                aria-label="About Us"
-              >
-                About Us
-              </Link>
-              <Link
-                href="contact-us"
-                className="text-muted-foreground whitespace-nowrap hover:text-foreground"
-                aria-label="Contact Us"
-              >
-                Contact Us
-              </Link>
+              {navMenuItems.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="text-muted-foreground whitespace-nowrap hover:text-foreground"
+                >
+                  {item.name}
+                </Link>
+              ))}
             </nav>
           </SheetContent>
         </Sheet>

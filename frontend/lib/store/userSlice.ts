@@ -1,8 +1,8 @@
-// store/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { clearRooms } from "./roomsSlice";
 
-const initialState = {
-  user: null,
+const initialState: { user: string; } = {
+  user: "",
 };
 
 const userSlice = createSlice({
@@ -13,7 +13,8 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     clearUser: (state) => {
-      state.user = null;
+      clearRooms();
+      state.user = "";
     },
   },
 });

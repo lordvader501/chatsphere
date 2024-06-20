@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/card";
 
 import Container from "@/components/layouts/Container";
-import LoginLogoutForm from "../forms/LoginLogoutForm";
+import LoginSignupFrom from "../forms/LoginSignupForm";
 
 function LoginSignup({
   isLogin,
@@ -25,7 +25,7 @@ function LoginSignup({
           <CardTitle className="text-2xl">{pageDetails.title}</CardTitle>
           <CardDescription>{pageDetails.description}</CardDescription>
         </CardHeader>
-        <LoginLogoutForm isLogin={isLogin} />
+        <LoginSignupFrom isLogin={isLogin} />
       </Card>
     </Container>
   );

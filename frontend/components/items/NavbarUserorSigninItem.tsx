@@ -10,22 +10,29 @@ import {
 import { Button } from "../ui/button";
 import { CircleUser } from "lucide-react";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
 import { clearUser } from "@/lib/store/userSlice";
+import { logoutUserApi } from "@/lib/apiscaller";
+import { useToast } from "../ui/use-toast";
+import { useAppDispatch, useAppSelector } from "@/lib/store";
 
 function NavbarUserorSigninItem() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => (state as any).user.user);
+  const dispatch = useAppDispatch();
+  const { toast } = useToast();
+  const user = useAppSelector((state) => (state as any).user.user);
+
+  const navMenuItems = [
+    { name: "Profile", link: "/profile" },
+    { name: "Rooms", link: "/my-rooms" },
+    { name: "Support", link: "/support" },
+  ];
 
   async function handleLogout() {
     try {
-      const response = await fetch(process.env["BACKEND_URL"] + "/logout", {
-        method: "GET",
-        credentials: "include",
+      const data = await logoutUserApi();
+      toast({
+        description: "You have been logged out.",
+        variant: "success",
       });
-      const data = await response.json();
-      if (!response.ok) throw Error(data.error);
       dispatch(clearUser());
     } catch (e) {
       console.error(e);
@@ -43,10 +50,13 @@ function NavbarUserorSigninItem() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Profile</DropdownMenuLabel>
+              <DropdownMenuLabel>{user}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              {navMenuItems.map((item) => (
+                <Link href={item.link} key={item.name}>
+                  <DropdownMenuItem>{item.name}</DropdownMenuItem>
+                </Link>
+              ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>

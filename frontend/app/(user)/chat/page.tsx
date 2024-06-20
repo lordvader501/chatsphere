@@ -1,69 +1,50 @@
-"use client";
-import ChatInputBox from "@/components/items/ChatInputBox";
-import ChatMessage from "@/components/items/ChatMessage";
+import CreateNewRoomOrJoinRoom from "@/components/forms/CreateNewRoomOrJoinRoom";
 import Container from "@/components/layouts/Container";
-import ProtectedRoute from "@/components/routes/ProtectedRoute";
-import { Message } from "@/lib/const";
-import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-
-function ChatPage() {
-  const roomid = useSearchParams().get("room");
-  if (!roomid) return <Container>Invalid Room</Container>;
-  const [websocket, setSocket] = useState<WebSocket | null>(null);
-  const [members, setMembers] = useState<string[]>([]);
-  const user = useSelector((state) => (state as any).user.user);
-  useEffect(() => {
-    const ws = new WebSocket(process.env["WS_URL"] + roomid);
-
-    ws.onopen = () => {
-      console.log("Connected to the WebSocket server");
-      setSocket(ws);
-    };
-
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 3) {
-        setMembers(message.message);
-        return;
-      }
-      if (message.username !== user) {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log("Disconnected from the WebSocket server");
-      setSocket(null);
-    };
-
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close();
-      }
-    };
-  }, []);
-  const [messages, setMessages] = useState<Message[]>([]);
-  function handleMessage(message: Message) {
-    setMessages([...messages, message]);
-  }
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Link from "next/link";
+function ChatHomePage() {
+  const createRoomDetails = {
+    title: "Create a new room",
+    description:
+      "Fill in the requeired details for creating a new room to chat.",
+  };
+  const joinRoomDetails = {
+    title: "Join a Room",
+    description:
+      "Fill in the room ID of the room that you want to join and chat.",
+  };
   return (
-    <Container className="py-0 h-[calc(100vh-64px)] flex flex-col justify-end">
-      <ChatMessage messages={messages} />
-      <div className="flex items-center justify-center mt-6">
-        <ChatInputBox
-          classNames="max-w-[500px]"
-          handleMessage={handleMessage}
-          socket={websocket}
-          user={user}
-        />
+    <Container>
+      <div className="flex gap-4 mb-10">
+        <Link href="#createroom">
+          <Button>Create New Room</Button>
+        </Link>
+        <Link href="#joinroom">
+          <Button>Join Room</Button>
+        </Link>
       </div>
+      <Card className="mx-auto max-w-sm mb-10" id="createroom">
+        <CardHeader>
+          <CardTitle className="text-2xl">{createRoomDetails.title}</CardTitle>
+          <CardDescription>{createRoomDetails.description}</CardDescription>
+        </CardHeader>
+        <CreateNewRoomOrJoinRoom isCreateRoom={true} />
+      </Card>
+      <Card className="mx-auto max-w-sm" id="joinroom">
+        <CardHeader>
+          <CardTitle className="text-2xl">{joinRoomDetails.title}</CardTitle>
+          <CardDescription>{joinRoomDetails.description}</CardDescription>
+        </CardHeader>
+        <CreateNewRoomOrJoinRoom isCreateRoom={false} />
+      </Card>
     </Container>
   );
 }
-export default ProtectedRoute(ChatPage);
+
+export default ChatHomePage;
