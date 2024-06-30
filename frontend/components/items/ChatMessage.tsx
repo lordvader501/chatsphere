@@ -5,7 +5,10 @@ import { ScrollArea } from "../ui/scroll-area";
 
 function ChatMessage({ messages }: { messages: Message[] }) {
   return (
-    <div id="chatmessage" className="overflow-y-scroll no-scrollbar">
+    <div
+      id="chatmessage"
+      className="overflow-y-scroll no-scrollbar w-full sm:w-[50vw] mx-auto"
+    >
       {messages.map((item, idx) => {
         if (item.type !== 3)
           return (

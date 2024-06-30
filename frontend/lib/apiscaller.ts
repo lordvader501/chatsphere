@@ -55,6 +55,39 @@ export async function signupUserApi(email: string, username: string, password: s
   return data;
 }
 
+export async function requestResetPassApi(email: string) {
+  const response = await fetch(
+    process.env.NEXT_PUBLIC_BACKEND_URL + "/request-reset-password",
+    {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ email: email }),
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    if (response.status === 401) store.dispatch(clearUser());
+    throw Error(data.error);
+  }
+  return data;
+}
+export async function resetPassApi(password: string, token: string) {
+  const response = await fetch(
+    process.env.NEXT_PUBLIC_BACKEND_URL + "/reset-password?token=" + token,
+    {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ new_password: password }),
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    if (response.status === 401) store.dispatch(clearUser());
+    throw Error(data.error);
+  }
+  return data;
+}
+
 // check roomid api caller
 export async function checkRoomIdApi(roomid: string) {
   const response = await fetch(

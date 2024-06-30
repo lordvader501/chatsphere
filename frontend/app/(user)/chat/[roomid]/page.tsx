@@ -57,7 +57,7 @@ function ChatPage({ params: { roomid } }: Params) {
       };
 
       wsref.current.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.error("WebSocket error:", error, wsref.current?.protocol);
       };
     }
     return () => {
@@ -77,7 +77,7 @@ function ChatPage({ params: { roomid } }: Params) {
       <div className="flex items-center justify-center mt-6 gap-4 mb-4">
         <ChatUsersLists members={members} />
         <ChatInputBox
-          classNames="max-w-[500px]"
+          classNames="max-w-[54vw]"
           handleMessage={handleMessage}
           socket={websocket}
           user={user}

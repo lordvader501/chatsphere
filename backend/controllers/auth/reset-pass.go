@@ -49,7 +49,7 @@ func RequestResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Reset email sent"})
+	json.NewEncoder(w).Encode(map[string]string{"message": "Reset password email sent. Please check your email."})
 }
 
 type PasswordReset struct {
@@ -100,7 +100,7 @@ func sendResetPasswordMail(email, token string) error {
 		return fmt.Errorf("error parsing email template: %w", err)
 	}
 
-	resetPasswordLink := fmt.Sprintf("http://localhost:8080/reset-password?token=%s", token)
+	resetPasswordLink := fmt.Sprintf(os.Getenv("ORIGIN_HOST")+"/reset-password?token=%s", token)
 
 	data := struct {
 		ResetPasswordLink string

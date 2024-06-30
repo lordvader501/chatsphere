@@ -40,7 +40,7 @@ function ChatInputBox({
       <Textarea
         value={message}
         placeholder="Type your message here."
-        className="border-2 border-solid no-scrollbar focus:outline-none"
+        className="border-2 border-solid no-scrollbar !h-16 w-[50vw] focus:outline-none"
         autoCorrect="off"
         onChange={(e) => setMessage(e.target.value)}
         onKeyUp={(e) => {
